@@ -25,7 +25,8 @@ const DEFAULT_TEMPLATES = {
 
 const DEFAULT_ENTROPY_MINUTES = 10;
 
-const BUTTON_CLASSLIST = 'fab-Button fab-Button--small fab-Button--width100';
+const CONTAINER_CLASSLIST = 'fabric-5qovnk-root MuiBox-root';
+const BUTTON_CLASSLIST = 'MuiButtonBase-root MuiButton-root jss-v2 jss-v36 jss-v3 jss-v4 MuiButton-contained jss-v10 MuiButton-containedPrimary jss-v11 MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation';
 
 /* Here be dragons */
 (async function() {
@@ -46,9 +47,16 @@ const BUTTON_CLASSLIST = 'fab-Button fab-Button--small fab-Button--width100';
   /* Fill Month */
   let btn_fill = document.createElement('button');
 
+  let container_fill = document.createElement('div');
+  container_fill.classList.value = CONTAINER_CLASSLIST
+  container_fill.append(btn_fill);
+
   btn_fill.type = 'button';
   btn_fill.classList.value = BUTTON_CLASSLIST;
-  btn_fill.innerText = 'Fill Month';
+  btn_fill.style.backgroundColor = "rgb(36, 130, 122)";
+  btn_fill.style.color = "white";
+  btn_fill.style.cursor = "pointer";
+  btn_fill.innerText = '📅 Fill Month';
 
   btn_fill.onclick = function () {
     let tsd = JSON.parse(document.getElementById('js-timesheet-data').innerHTML);
@@ -135,9 +143,16 @@ const BUTTON_CLASSLIST = 'fab-Button fab-Button--small fab-Button--width100';
   /* Delete Month */
   let btn_del = document.createElement('button');
 
+  let container_del = document.createElement('div');
+  container_del.classList.value = CONTAINER_CLASSLIST
+  container_del.append(btn_del);
+
   btn_del.type = 'button';
   btn_del.classList.value = BUTTON_CLASSLIST;
-  btn_del.innerText = 'Delete Month';
+  btn_del.style.backgroundColor = "rgb(36, 130, 122)";
+  btn_del.style.color = "white";
+  btn_del.style.cursor = "pointer";
+  btn_del.innerText = '🗑️ Delete Month';
 
   btn_del.onclick = function () {
     let tsd = JSON.parse(document.getElementById('js-timesheet-data').innerHTML);
@@ -176,7 +191,7 @@ const BUTTON_CLASSLIST = 'fab-Button fab-Button--small fab-Button--width100';
   }
 
   /* Add buttons */
-  const button_container = document.querySelector("button[data-bi-id='my-info-timesheet-clock-in-button']").parentElement;
-  button_container.append(btn_del);
-  button_container.append(btn_fill);
+  const button_container = document.querySelector("button[data-bi-id='my-info-timesheet-clock-in-button']").parentElement.parentElement;
+  button_container.appendChild(container_fill);
+  button_container.appendChild(container_del);
 })();
