@@ -185,6 +185,7 @@ const BUTTON_CLASSLIST = 'fab-Button fab-Button--small fab-Button--width100';
   }
 
   /* Add buttons */
-  document.querySelector('.TimesheetSummary').prepend(container_del);
-  document.querySelector('.TimesheetSummary').prepend(container_fill);
+  const button_container = document.querySelector("button[data-bi-id='my-info-timesheet-clock-in-button']").parentElement;
+  button_container.append(container_del);
+  button_container.append(container_fill);
 })();
