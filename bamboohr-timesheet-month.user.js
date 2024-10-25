@@ -25,7 +25,6 @@ const DEFAULT_TEMPLATES = {
 
 const DEFAULT_ENTROPY_MINUTES = 10;
 
-const CONTAINER_CLASSLIST = 'TimesheetSummary__clockButtonWrapper';
 const BUTTON_CLASSLIST = 'fab-Button fab-Button--small fab-Button--width100';
 
 /* Here be dragons */
@@ -45,11 +44,7 @@ const BUTTON_CLASSLIST = 'fab-Button fab-Button--small fab-Button--width100';
   }
 
   /* Fill Month */
-  let container_fill = document.createElement('div');
-  container_fill.classList.value = CONTAINER_CLASSLIST;
-
   let btn_fill = document.createElement('button');
-  container_fill.append(btn_fill);
 
   btn_fill.type = 'button';
   btn_fill.classList.value = BUTTON_CLASSLIST;
@@ -138,11 +133,7 @@ const BUTTON_CLASSLIST = 'fab-Button fab-Button--small fab-Button--width100';
   }
 
   /* Delete Month */
-  let container_del = document.createElement('div');
-  container_del.classList.value = CONTAINER_CLASSLIST;
-
   let btn_del = document.createElement('button');
-  container_del.append(btn_del);
 
   btn_del.type = 'button';
   btn_del.classList.value = BUTTON_CLASSLIST;
@@ -186,6 +177,6 @@ const BUTTON_CLASSLIST = 'fab-Button fab-Button--small fab-Button--width100';
 
   /* Add buttons */
   const button_container = document.querySelector("button[data-bi-id='my-info-timesheet-clock-in-button']").parentElement;
-  button_container.append(container_del);
-  button_container.append(container_fill);
+  button_container.append(btn_del);
+  button_container.append(btn_fill);
 })();
