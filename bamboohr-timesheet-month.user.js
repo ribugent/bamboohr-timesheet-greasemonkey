@@ -191,7 +191,14 @@ const BUTTON_CLASSLIST = 'MuiButtonBase-root MuiButton-root jss-v2 jss-v36 jss-v
   }
 
   /* Add buttons */
-  const button_container = document.querySelector("button[data-bi-id='my-info-timesheet-clock-in-button']").parentElement.parentElement;
+  let button_container;
+  const clock_in_button = document.querySelector("button[data-bi-id='my-info-timesheet-clock-in-button']");
+  if (clock_in_button) {
+      button_container = clock_in_button.parentElement.parentElement
+  } else {
+      button_container = document.querySelector(".TimesheetContent .MuiAvatar-img").parentElement.parentElement
+  }
+
   button_container.appendChild(container_fill);
   button_container.appendChild(container_del);
 })();
