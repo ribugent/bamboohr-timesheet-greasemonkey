@@ -25,8 +25,8 @@ const DEFAULT_TEMPLATES = {
 
 const DEFAULT_ENTROPY_MINUTES = 10;
 
-const CONTAINER_CLASSLIST = 'fabric-5qovnk-root MuiBox-root';
-const BUTTON_CLASSLIST = 'MuiButtonBase-root MuiButton-root jss-v2 jss-v36 jss-v3 jss-v4 MuiButton-contained jss-v10 MuiButton-containedPrimary jss-v11 MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-disableElevation';
+// Updated for new Fabric UI
+const BUTTON_CLASSLIST = 'fab-Button fab-Button--primary fab-Button--medium';
 
 /* Here be dragons */
 (async function() {
@@ -44,18 +44,14 @@ const BUTTON_CLASSLIST = 'MuiButtonBase-root MuiButton-root jss-v2 jss-v36 jss-v
     GM.setValue('ENTROPY_MINUTES', ENTROPY_MINUTES);
   }
 
-  /* Fill Month */
+  /* Fill Month Button */
   let btn_fill = document.createElement('button');
-
-  let container_fill = document.createElement('div');
-  container_fill.classList.value = CONTAINER_CLASSLIST
-  container_fill.append(btn_fill);
-
   btn_fill.type = 'button';
-  btn_fill.classList.value = BUTTON_CLASSLIST;
+  btn_fill.className = BUTTON_CLASSLIST;
   btn_fill.style.backgroundColor = "rgb(36, 130, 122)";
   btn_fill.style.color = "white";
   btn_fill.style.cursor = "pointer";
+  btn_fill.style.marginRight = "8px";
   btn_fill.innerText = '📅 Fill Month';
 
   btn_fill.onclick = function () {
@@ -140,21 +136,20 @@ const BUTTON_CLASSLIST = 'MuiButtonBase-root MuiButton-root jss-v2 jss-v36 jss-v
     return false;
   }
 
-  /* Delete Month */
+  /* Delete Month Button */
   let btn_del = document.createElement('button');
-
-  let container_del = document.createElement('div');
-  container_del.classList.value = CONTAINER_CLASSLIST
-  container_del.append(btn_del);
-
   btn_del.type = 'button';
-  btn_del.classList.value = BUTTON_CLASSLIST;
-  btn_del.style.backgroundColor = "rgb(36, 130, 122)";
+  btn_del.className = BUTTON_CLASSLIST;
+  btn_del.style.backgroundColor = "rgb(220, 53, 69)";
   btn_del.style.color = "white";
   btn_del.style.cursor = "pointer";
   btn_del.innerText = '🗑️ Delete Month';
 
   btn_del.onclick = function () {
+    if (!confirm('Are you sure you want to delete all entries for this month?')) {
+      return false;
+    }
+
     let tsd = JSON.parse(document.getElementById('js-timesheet-data').innerHTML);
     let entries = [];
 
@@ -163,6 +158,11 @@ const BUTTON_CLASSLIST = 'MuiButtonBase-root MuiButton-root jss-v2 jss-v36 jss-v
       for (const entry of details.clockEntries) {
         entries.push(entry.id)
       }
+    }
+
+    if (entries.length === 0) {
+      alert('No entries to delete.');
+      return false;
     }
 
     fetch(
@@ -190,15 +190,67 @@ const BUTTON_CLASSLIST = 'MuiButtonBase-root MuiButton-root jss-v2 jss-v36 jss-v
     return false;
   }
 
-  /* Add buttons */
-  let button_container;
-  const clock_in_button = document.querySelector("button[data-bi-id='my-info-timesheet-clock-in-button']");
-  if (clock_in_button) {
-      button_container = clock_in_button.parentElement.parentElement
-  } else {
-      button_container = document.querySelector(".TimesheetContent .MuiAvatar-img").parentElement.parentElement
-  }
+  /* Add buttons - Wait for timesheet to load */
+  let attemptCount = 0;
+  const maxAttempts = 20; // Try for 10 seconds
 
-  button_container.appendChild(container_fill);
-  button_container.appendChild(container_del);
+  const waitForTimesheet = setInterval(() => {
+    attemptCount++;
+
+    // Check if timesheet data exists
+    const timesheetData = document.getElementById('js-timesheet-data');
+    const timesheetContainer = document.getElementById('js-timesheet');
+
+    if (timesheetData && timesheetContainer) {
+      clearInterval(waitForTimesheet);
+
+      // Create wrapper for buttons
+      const buttonWrapper = document.createElement('div');
+      buttonWrapper.style.display = 'flex';
+      buttonWrapper.style.gap = '8px';
+      buttonWrapper.style.marginTop = '16px';
+      buttonWrapper.style.marginBottom = '16px';
+      buttonWrapper.style.padding = '12px';
+      buttonWrapper.style.borderRadius = '4px';
+      buttonWrapper.style.backgroundColor = '#f5f5f5';
+      buttonWrapper.id = 'tampermonkey-timesheet-buttons';
+
+      buttonWrapper.appendChild(btn_fill);
+      buttonWrapper.appendChild(btn_del);
+
+      // Try to find the best location for buttons
+      // Option 1: Inside the timesheet container at the top
+      if (timesheetContainer.children.length > 0) {
+        timesheetContainer.insertBefore(buttonWrapper, timesheetContainer.firstChild);
+        console.log('✅ Tampermonkey buttons added to timesheet container');
+        return;
+      }
+
+      // Option 2: After the employee info column
+      const infoColumn = document.querySelector('.infoColumn');
+      if (infoColumn && infoColumn.nextSibling) {
+        infoColumn.parentElement.insertBefore(buttonWrapper, infoColumn.nextSibling);
+        console.log('✅ Tampermonkey buttons added after info column');
+        return;
+      }
+
+      // Option 3: At the top of inside-content
+      const insideContent = document.getElementById('inside-content');
+      if (insideContent) {
+        insideContent.insertBefore(buttonWrapper, insideContent.firstChild);
+        console.log('✅ Tampermonkey buttons added to inside-content');
+        return;
+      }
+
+      // Fallback: append to body
+      document.body.appendChild(buttonWrapper);
+      console.log('⚠️ Tampermonkey buttons added to body (fallback)');
+    }
+
+    // Stop trying after max attempts
+    if (attemptCount >= maxAttempts) {
+      clearInterval(waitForTimesheet);
+      console.error('❌ Failed to find timesheet container after', maxAttempts, 'attempts');
+    }
+  }, 500); // Check every 500ms
 })();
